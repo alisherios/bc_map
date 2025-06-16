@@ -413,6 +413,7 @@ function renderCompanyPopup(businessCenter) {
 }
 
 function MapPage() {
+  const [ktFilter, setKtFilter] = useState('all'); // all | kt | nonkt
   const [businessCenters, setBusinessCenters] = useState([]);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [showClusters, setShowClusters] = useState(true);
@@ -422,6 +423,21 @@ function MapPage() {
   useEffect(() => {
     setBusinessCenters(data);
   }, []);
+
+  const filteredBusinessCenters = businessCenters
+  .map(center => {
+    const filteredCompanies = center.companies.filter(company => {
+      if (ktFilter === 'kt') return company.is_kt_client;
+      if (ktFilter === 'nonkt') return !company.is_kt_client;
+      return true;
+    });
+    return {
+      ...center,
+      companies: filteredCompanies
+    };
+  })
+  .filter(center => center.companies.length > 0);
+
 
   const clearZone = () => {
     setSelectedZone(null);
@@ -442,7 +458,7 @@ function MapPage() {
         />
         
         <MapInteractions
-          businessCenters={businessCenters}
+          businessCenters={filteredBusinessCenters}
           showHeatmap={showHeatmap}
           showClusters={showClusters}
           zoneSelectionMode={zoneSelectionMode}
@@ -475,10 +491,23 @@ function MapPage() {
         selectedZone={selectedZone}
         clearZone={clearZone}
       />
+      <div className="absolute top-4 right-4 z-[1000] bg-white shadow p-2 rounded">
+  <label className="text-sm font-medium text-gray-700 mr-2">Фильтр КТ:</label>
+  <select
+    value={ktFilter}
+    onChange={(e) => setKtFilter(e.target.value)}
+    className="border rounded p-1 text-sm"
+  >
+    <option value="all">Все</option>
+    <option value="kt">Только КТ</option>
+    <option value="nonkt">Только не КТ</option>
+  </select>
+</div>
+
       
       <ZoneStatsPanel
         selectedZone={selectedZone}
-        businessCenters={businessCenters}
+        businessCenters={filteredBusinessCenters}
       />
     </div>
   );
