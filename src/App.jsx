@@ -72,7 +72,7 @@ function Navigation() {
         <div className="flex items-center gap-4">
           {/* Логотип Казахтелеком */}
           <img 
-            src="/kazakhtelecom_logo.png" 
+            src="kazakhtelecom_logo.png" 
             alt="Казахтелеком" 
             className="h-12 w-auto"
           />
